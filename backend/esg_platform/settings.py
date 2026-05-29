@@ -7,11 +7,17 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ─── Core ─────────────────────────────────────────────
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback-dev-secret-key")
-DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
-# ─── Applications ─────────────────────────────────────────────────────────────
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
+
+# ─── Applications ─────────────────────────────────────
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -19,11 +25,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # Third-party
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
-    # Our apps
+
+    # Local apps
     "apps.core",
     "apps.ingestion",
     "apps.normalization",
@@ -31,10 +39,13 @@ INSTALLED_APPS = [
     "apps.review",
 ]
 
+# ─── Middleware ───────────────────────────────────────
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",       # Must be first
+    "corsheaders.middleware.CorsMiddleware",
+
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -45,6 +56,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "esg_platform.urls"
 
+# ─── Templates ────────────────────────────────────────
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -63,7 +75,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "esg_platform.wsgi.application"
 
-# ─── Database ──────────────────────────────────────────────────────────────────
+# ─── Database ─────────────────────────────────────────
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv("DATABASE_URL"),
@@ -71,7 +83,7 @@ DATABASES = {
     )
 }
 
-# ─── Auth ──────────────────────────────────────────────────────────────────────
+# ─── Auth ─────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -79,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ─── REST Framework ────────────────────────────────────────────────────────────
+# ─── REST Framework ────────────────────────────────────
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -91,24 +103,28 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
 }
 
-# ─── CORS ──────────────────────────────────────────────────────────────────────
+# ─── CORS ──────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173"
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173"
 ).split(",")
+
 CORS_ALLOW_CREDENTIALS = True
 
-# ─── Internationalization ──────────────────────────────────────────────────────
+# ─── Internationalization ─────────────────────────────
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# ─── Static & Media ────────────────────────────────────────────────────────────
+# ─── Static / Media ────────────────────────────────────
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ─── Default PK ────────────────────────────────────────
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
